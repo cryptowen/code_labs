@@ -1,3 +1,6 @@
+// ckb hash
+// https://github.com/nervosnetwork/ckb/wiki/ckbhash
+
 use blake2::digest::{Update, VariableOutput};
 use blake2::VarBlake2b;
 use blake2b_ref::{Blake2b, Blake2bBuilder};
@@ -14,6 +17,7 @@ fn new_blake2b() -> Blake2b {
 fn main() {
     let raw_msg = b"hello world";
 
+    // blake2 crate, support no-std, can be used in ckb contracts
     let mut ctx = VarBlake2b::with_params(b"", b"", CKB_HASH_PERSONALIZATION, 32);
     ctx.update(raw_msg);
     ctx.finalize_variable(|message| {
@@ -21,6 +25,7 @@ fn main() {
         dbg!(&res);
     });
 
+    // blake2b_ref crate, support no-std, can be used in ckb contracts
     let mut blake2b_custom = new_blake2b();
     let mut message = [0u8; 32];
     blake2b_custom.update(raw_msg);
@@ -28,6 +33,7 @@ fn main() {
     let res = hex::encode(message);
     dbg!(&res);
 
+    // blake2b-rs crate, do not support no-std
     let mut blake2b = ckb_hash::new_blake2b();
     let mut message = [0u8; 32];
     blake2b.update(raw_msg);
